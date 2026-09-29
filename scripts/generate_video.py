@@ -1,22 +1,23 @@
 """
-NexusOps Demo Video Generator
-Uses edge-tts for professional neural narration, Pillow for 1080p slide generation,
-and ffmpeg (via imageio-ffmpeg) to produce a 1080p MP4 presentation video.
+NexusOps Demo Video Generator - Robust Frame Encoding
+Produces a 1080p, 25fps video where every second has real video frames (no black screen or freeze).
 """
 
 import os
 import asyncio
 import subprocess
+import numpy as np
+from PIL import Image, ImageDraw
 import edge_tts
-from PIL import Image, ImageDraw, ImageFont
+import imageio
 import imageio_ffmpeg
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUTPUT_DIR = os.path.join(BASE_DIR, "docs")
 AUDIO_FILE = os.path.join(OUTPUT_DIR, "narration.mp3")
-VIDEO_FILE = os.path.join(OUTPUT_DIR, "nexus_ops_demo.mp4")
+TEMP_VIDEO_FILE = os.path.join(OUTPUT_DIR, "temp_video.mp4")
+FINAL_VIDEO_FILE = os.path.join(OUTPUT_DIR, "nexus_ops_demo.mp4")
 
-# Narration text matching DEMO_VIDEO_SCRIPT.md
 NARRATION_TEXT = (
     "Welcome to AWS NexusOps. In enterprise field operations and logistics, critical infrastructure disruptions often cause communication breakdowns. "
     "Operations leads, field engineers, and executive stakeholders are scattered across disjointed chat apps, email chains, and SMS pagers. "
@@ -38,132 +39,174 @@ NARRATION_TEXT = (
 )
 
 async def generate_audio():
-    print("[AUDIO] Generating neural voiceover with edge-tts...")
+    print("[AUDIO] Generating neural voiceover...")
     communicate = edge_tts.Communicate(NARRATION_TEXT, voice="en-US-ChristopherNeural", rate="+2%")
     await communicate.save(AUDIO_FILE)
-    print(f"[AUDIO] Audio saved to: {AUDIO_FILE}")
+    print(f"[AUDIO] Audio generated at: {AUDIO_FILE}")
 
 def create_slides():
-    print("[SLIDES] Creating 1080p high-resolution visual slides...")
+    print("[SLIDES] Generating visual slide images...")
     os.makedirs(os.path.join(OUTPUT_DIR, "slides"), exist_ok=True)
     width, height = 1920, 1080
 
     slides_info = [
         {
             "num": 1,
+            "badge": "AWS HACKATHON 2026 | SUBMISSION",
             "title": "AWS NexusOps",
             "subtitle": "Autonomous Omnichannel CDS Operations Concierge",
-            "desc": "Powered by Amazon Bedrock AgentCore (Claude 3.5) & AWS CDS\n• AWS End User Messaging Social (WhatsApp)\n• Amazon SES v2 (Executive Audit Digests)\n• AWS End User Messaging SMS v2 (Critical Alerts)",
-            "tag": "EXECUTIVE OVERVIEW",
-            "color": (56, 189, 248)
+            "points": [
+                "Mission: Autonomous multi-channel incident remediation for enterprise & field operations",
+                "Brain: Amazon Bedrock AgentCore & Claude 3.5 Sonnet (ReAct Tool Orchestration)",
+                "Channels: AWS End User Messaging Social (WhatsApp) + Amazon SES v2 + AWS Pinpoint SMS v2",
+                "Database & Memory: Amazon DynamoDB for real-time audit logs & ticket lifecycle tracking"
+            ],
+            "accent": (56, 189, 248)
         },
         {
             "num": 2,
-            "title": "Interactive WhatsApp Mobile Interface",
+            "badge": "CHANNEL 1: WHATSAPP INTERFACE",
+            "title": "Field Interaction over WhatsApp",
             "subtitle": "AWS End User Messaging Social (boto3 socialmessaging)",
-            "desc": "• Real-time conversational triage for field engineers & clients\n• Direct execution of SendWhatsAppMessage at runtime\n• Instant incident acknowledgement and status updates\n• Seamless two-way conversational flow",
-            "tag": "CHANNEL 1: WHATSAPP",
-            "color": (37, 211, 102)
+            "points": [
+                "Real-time two-way conversational triage for field leads & site operators",
+                "Runtime execution of SDK operation: SendWhatsAppMessage",
+                "Simulated scenario: Substation Node 4B telemetry failure resolved autonomously",
+                "Targeting the Meta WhatsApp Bonus Prize ($10,000 USD)"
+            ],
+            "accent": (37, 211, 102)
         },
         {
             "num": 3,
-            "title": "Amazon Bedrock AgentCore Reasoning",
-            "subtitle": "Autonomous ReAct Tool Calling Engine (Claude 3.5 Sonnet)",
-            "desc": "• Multi-turn Converse ReAct Loop with live reasoning traces\n• Autonomous decision: get_ticket_details, update_ticket_status\n• Dynamic tool selection across multiple AWS CDS services\n• Zero-friction testing with deterministic local sandbox",
-            "tag": "AGENTIC BRAIN",
-            "color": (168, 85, 247)
+            "badge": "AGENTIC BRAIN: BEDROCK AGENTCORE",
+            "title": "Amazon Bedrock ReAct Reasoning Loop",
+            "subtitle": "Anthropic Claude 3.5 Sonnet with Dynamic Tool Execution",
+            "points": [
+                "Step 1: Cognitive Ingestion -> evaluates telemetry error and fetches ticket TICK-8041",
+                "Step 2: Autonomous Remediation -> triggers satellite failover & updates ticket status to RESOLVED",
+                "Multi-tool dispatch: Coordinates WhatsApp update, SES executive email, and SMS broadcast",
+                "Real-time streaming traces rendered visually in the Command Center"
+            ],
+            "accent": (168, 85, 247)
         },
         {
             "num": 4,
-            "title": "Multi-Channel CDS Dispatches",
-            "subtitle": "Amazon SES v2 & AWS End User Messaging SMS v2",
-            "desc": "• Amazon SES v2: Automated responsive HTML post-mortems delivered to stakeholders\n• AWS Pinpoint SMS v2: Immediate high-priority mobile broadcast alerts\n• Complete audit trail & delivery tracking in DynamoDB\n• Operations Command Center with real-time trace inspection",
-            "tag": "CHANNELS 2 & 3: SES & SMS",
-            "color": (245, 158, 11)
+            "badge": "CHANNELS 2 & 3: FORMAL AUDIT & BROADCAST",
+            "title": "Executive Email & Mobile SMS Dispatches",
+            "subtitle": "Amazon SES v2 (sesv2) & AWS Pinpoint SMS v2 (pinpoint-sms-voice-v2)",
+            "points": [
+                "Amazon SES v2: Automated responsive HTML incident post-mortems delivered to executive lists",
+                "AWS Pinpoint SMS v2: Immediate high-priority transactional SMS alerts & 2FA overrides",
+                "Audit trail & cryptographic delivery receipts stored persistently in DynamoDB",
+                "Unified operations console with live trace inspector and inbox renderer"
+            ],
+            "accent": (245, 158, 11)
         },
         {
             "num": 5,
-            "title": "Planetary-Scale Cloud Architecture",
-            "subtitle": "Amazon Bedrock + AWS Lambda + DynamoDB + AWS CDS",
-            "desc": "• Cloud-native Infrastructure as Code (AWS CDK & CloudFormation)\n• Highly resilient, asynchronous event-driven serverless pipeline\n• Submitted for AWS CDS Agentic AI Hackathon & Meta WhatsApp Bonus Prize\n• GitHub: https://github.com/AbMannan1761/aws-nexusops",
-            "tag": "ARCHITECTURE & REPO",
-            "color": (56, 189, 248)
+            "badge": "ARCHITECTURE & PRODUCTION READY",
+            "title": "Serverless Planetary-Scale Architecture",
+            "subtitle": "Fully Open Source under MIT License on GitHub",
+            "points": [
+                "Infrastructure as Code: AWS Cloud Development Kit (CDK) & CloudFormation ready",
+                "Deterministic Sandbox: 100% reproducible local testing out of the box for judges",
+                "GitHub Code Repository: https://github.com/AbMannan1761/aws-nexusops",
+                "Ready for Devpost Submission & ACE Partner Opportunity"
+            ],
+            "accent": (56, 189, 248)
         }
     ]
 
-    slide_paths = []
+    images = []
     for info in slides_info:
-        img = Image.new("RGB", (width, height), color=(9, 13, 22))
+        img = Image.new("RGB", (width, height), color=(11, 15, 25))
         draw = ImageDraw.Draw(img)
 
-        # Top border accent line
-        draw.rectangle([0, 0, width, 8], fill=info["color"])
+        # Gradient top stripe
+        draw.rectangle([0, 0, width, 10], fill=info["accent"])
 
-        # Tag
-        draw.rectangle([100, 100, 420, 145], fill=(20, 30, 45), outline=info["color"], width=2)
-        draw.text((120, 112), info["tag"], fill=info["color"])
+        # Category Badge
+        draw.rectangle([120, 100, 520, 145], fill=(20, 28, 45), outline=info["accent"], width=2)
+        draw.text((140, 112), info["badge"], fill=info["accent"])
 
-        # Title
-        draw.text((100, 200), info["title"], fill=(255, 255, 255))
-        draw.text((100, 290), info["subtitle"], fill=info["color"])
+        # Main Titles
+        draw.text((120, 190), info["title"], fill=(255, 255, 255))
+        draw.text((120, 280), info["subtitle"], fill=info["accent"])
 
-        # Divider
-        draw.line([100, 370, 1820, 370], fill=(40, 55, 80), width=3)
+        # Divider line
+        draw.line([120, 360, 1800, 360], fill=(45, 60, 85), width=3)
 
-        # Content Card
-        draw.rectangle([100, 420, 1820, 950], fill=(15, 23, 42), outline=(40, 55, 80), width=2)
-        draw.text((140, 470), info["desc"], fill=(203, 213, 225), spacing=28)
+        # Card container
+        draw.rectangle([120, 410, 1800, 940], fill=(17, 24, 39), outline=(45, 60, 85), width=2)
+
+        # Bullets
+        y = 470
+        for pt in info["points"]:
+            # bullet point dot
+            draw.rectangle([160, y + 4, 172, y + 16], fill=info["accent"])
+            draw.text((195, y), pt, fill=(226, 232, 240))
+            y += 105
 
         # Footer
-        draw.text((100, 1000), "AWS Communication Developer Services (CDS) Agentic AI Partner Hackathon 2026", fill=(100, 116, 139))
-        draw.text((1600, 1000), f"Slide {info['num']} of 5", fill=(100, 116, 139))
+        draw.text((120, 995), "AWS CDS Agentic AI Partner Hackathon  |  NexusOps Omnichannel Concierge", fill=(100, 116, 139))
+        draw.text((1600, 995), f"Slide {info['num']} of 5", fill=(100, 116, 139))
 
-        path = os.path.join(OUTPUT_DIR, "slides", f"slide_{info['num']}.png")
-        img.save(path)
-        slide_paths.append(path)
+        img_path = os.path.join(OUTPUT_DIR, "slides", f"slide_{info['num']}.png")
+        img.save(img_path)
+        images.append(np.array(img))
 
-    return slide_paths
+    return images
 
-def render_video():
+def build_video_frames(slide_arrays):
+    print("[ENCODE] Writing full 25fps video stream (no dropped frames)...")
+    fps = 25
+    # Total audio duration is ~150 seconds. 5 slides -> 30 seconds each = 750 frames per slide
+    frames_per_slide = 750  # 30 seconds per slide = 150 seconds total
+
+    writer = imageio.get_writer(
+        TEMP_VIDEO_FILE,
+        fps=fps,
+        codec="libx264",
+        pixelformat="yuv420p",
+        macro_block_size=1
+    )
+
+    for i, slide in enumerate(slide_arrays):
+        print(f"[ENCODE] Writing 750 frames for Slide {i+1}...")
+        for _ in range(frames_per_slide):
+            writer.append_data(slide)
+
+    writer.close()
+    print(f"[ENCODE] Video stream written successfully to {TEMP_VIDEO_FILE}")
+
+def merge_audio_and_video():
     ffmpeg_exe = imageio_ffmpeg.get_ffmpeg_exe()
-    slide_dir = os.path.join(OUTPUT_DIR, "slides")
-    
-    # Check audio duration using ffprobe/ffmpeg
-    # We will build a concat script with durations for 5 slides
-    concat_file = os.path.join(OUTPUT_DIR, "slides.txt")
-    # Total script audio is roughly 80-90 seconds. 5 slides -> ~17s each
-    with open(concat_file, "w") as f:
-        for i in range(1, 6):
-            slide_path = os.path.join(slide_dir, f"slide_{i}.png").replace("\\", "/")
-            f.write(f"file '{slide_path}'\n")
-            f.write("duration 18.0\n")
-        # repeat last slide
-        slide_5 = os.path.join(slide_dir, "slide_5.png").replace("\\", "/")
-        f.write(f"file '{slide_5}'\n")
-
     cmd = [
         ffmpeg_exe,
         "-y",
-        "-f", "concat",
-        "-safe", "0",
-        "-i", concat_file,
+        "-i", TEMP_VIDEO_FILE,
         "-i", AUDIO_FILE,
-        "-c:v", "libx264",
-        "-pix_fmt", "yuv420p",
+        "-c:v", "copy",
         "-c:a", "aac",
         "-b:a", "192k",
         "-shortest",
-        VIDEO_FILE
+        FINAL_VIDEO_FILE
     ]
 
-    print("[RENDER] Rendering final 1080p MP4 video with ffmpeg...")
+    print("[MERGE] Merging 1080p video stream with crystal-clear audio narration...")
     subprocess.run(cmd, check=True)
-    print(f"[SUCCESS] Demo video created at: {VIDEO_FILE}")
+    
+    # Remove temp video file
+    if os.path.exists(TEMP_VIDEO_FILE):
+        os.remove(TEMP_VIDEO_FILE)
+
+    print(f"[SUCCESS] Final 1080p MP4 created at: {FINAL_VIDEO_FILE}")
 
 async def main():
     await generate_audio()
-    create_slides()
-    render_video()
+    slides = create_slides()
+    build_video_frames(slides)
+    merge_audio_and_video()
 
 if __name__ == "__main__":
     asyncio.run(main())
