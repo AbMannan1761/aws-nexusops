@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AWS NexusOps — Autonomous Omnichannel CDS Concierge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+  <!-- Ambient background glow -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-title">AWS NexusOps</span>
+        <span class="brand-subtitle">Autonomous Omnichannel CDS Concierge</span>
+      </div>
+    </div>
+
+    <!-- Active AWS Service Chips -->
+    <div class="service-badges">
+      <div class="badge badge-whatsapp" id="badge-whatsapp">
+        <span class="badge-dot"></span>
+        <span class="badge-name">WhatsApp (EUM Social)</span>
+        <span class="badge-sdk">boto3 socialmessaging</span>
+      </div>
+      <div class="badge badge-ses" id="badge-ses">
+        <span class="badge-dot"></span>
+        <span class="badge-name">Amazon SES v2</span>
+        <span class="badge-sdk">boto3 sesv2</span>
+      </div>
+      <div class="badge badge-sms" id="badge-sms">
+        <span class="badge-dot"></span>
+        <span class="badge-name">SMS / RCS (EUM)</span>
+        <span class="badge-sdk">boto3 pinpoint-sms-v2</span>
+      </div>
+      <div class="badge badge-bedrock" id="badge-bedrock">
+        <span class="badge-dot"></span>
+        <span class="badge-name">Bedrock AgentCore</span>
+        <span class="badge-sdk">Claude 3.5 Sonnet</span>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <div class="status-indicator">
+        <span class="pulse-dot"></span>
+        <span class="status-text">Engine Online</span>
+      </div>
+      <button class="btn-refresh" id="btn-refresh" title="Reset Demo Data">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M23 4v6h-6M1 20v-6h6"/>
+          <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main 3-Column Command Center Grid -->
+  <main class="dashboard-container">
+    
+    <!-- Column 1: Interactive WhatsApp Phone Simulator -->
+    <section class="panel phone-simulator-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#25D366" stroke-width="2">
+            <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/>
+          </svg>
+          <h3>WhatsApp Field Device</h3>
+        </div>
+        <span class="phone-pill">AWS EUM Social</span>
+      </div>
+
+      <!-- Smartphone Frame -->
+      <div class="smartphone-frame">
+        <div class="phone-notch">
+          <div class="camera"></div>
+          <div class="speaker"></div>
+        </div>
+
+        <div class="wa-header">
+          <div class="wa-avatar">
+            <div class="avatar-img">N</div>
+            <span class="online-indicator"></span>
+          </div>
+          <div class="wa-contact-info">
+            <h4>NexusOps Concierge</h4>
+            <p>Verified AWS Bedrock Agent</p>
+          </div>
+        </div>
+
+        <!-- Chat Messages Container -->
+        <div class="wa-chat-body" id="wa-chat-body">
+          <div class="wa-bubble wa-incoming">
+            <div class="wa-msg-content">
+              Welcome to <strong>NexusOps Concierge</strong>. I am your autonomous enterprise operations agent. Send any incident report or query to initiate immediate remediation.
+            </div>
+            <span class="wa-msg-time">09:50 AM</span>
+          </div>
+        </div>
+
+        <!-- Predefined Quick Prompts -->
+        <div class="quick-prompts">
+          <span class="qp-label">Quick Scenarios:</span>
+          <button class="qp-chip" data-prompt="Check status of Substation Node 4B telemetry failure.">⚡ Node 4B Failure</button>
+          <button class="qp-chip" data-prompt="Resolve ticket TICK-8041 and notify stakeholders with executive audit.">✅ Resolve & Notify</button>
+          <button class="qp-chip" data-prompt="Request emergency 2FA dispatch to field lead for site gate override.">🚨 SMS 2FA Dispatch</button>
+        </div>
+
+        <!-- Input Bar -->
+        <form class="wa-input-bar" id="wa-form">
+          <input type="text" id="wa-input" placeholder="Type a message or command..." autocomplete="off">
+          <button type="submit" id="wa-send-btn" title="Send via AWS SocialMessaging">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+            </svg>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Column 2: Amazon Bedrock Agent Live Reasoning & Trace Inspector -->
+    <section class="panel reasoning-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#a855f7" stroke-width="2">
+            <path d="M12 2a10 10 0 1010 10H12V2zM12 12L2.5 7.5M12 12v10"/>
+          </svg>
+          <h3>Bedrock Agent Reasoning Traces</h3>
+        </div>
+        <div class="agent-stats">
+          <span class="stat-pill"><strong id="metric-model">Claude 3.5</strong></span>
+          <span class="stat-pill"><strong id="metric-latency">~320ms</strong></span>
+        </div>
+      </div>
+
+      <div class="trace-feed" id="trace-feed">
+        <div class="empty-trace-state" id="empty-trace-state">
+          <div class="radar-scan"></div>
+          <h4>Agent Engine Idle</h4>
+          <p>Send a message on WhatsApp or click a quick scenario to watch Amazon Bedrock execute autonomous multi-step reasoning.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Column 3: Multi-Channel AWS CDS Dispatch Viewer & Stakeholder Inboxes -->
+    <section class="panel dispatch-panel">
+      <div class="panel-header tab-header">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="tab-ses">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            SES Email Inbox
+          </button>
+          <button class="tab-btn" data-tab="tab-sms">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+            </svg>
+            SMS / RCS Monitor
+          </button>
+          <button class="tab-btn" data-tab="tab-tickets">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            Incident Tickets
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab Content: SES Email -->
+      <div class="tab-content active" id="tab-ses">
+        <div class="email-inbox-wrapper">
+          <div class="email-meta-bar">
+            <div class="meta-row"><strong>From:</strong> <span id="ses-sender">ops-concierge@nexusops.aws (Amazon SES v2)</span></div>
+            <div class="meta-row"><strong>To:</strong> <span id="ses-recipient">ops-director@megacorp-logistics.com</span></div>
+            <div class="meta-row"><strong>Subject:</strong> <span id="ses-subject">Awaiting automated incident dispatch...</span></div>
+          </div>
+          <div class="email-html-body" id="ses-body-container">
+            <div class="empty-inbox-prompt">
+              <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#64748b" stroke-width="1.5">
+                <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+              <p>No SES emails dispatched yet. Trigger an incident resolution to see real-time executive digests delivered via Amazon SES v2.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Content: SMS / RCS -->
+      <div class="tab-content" id="tab-sms">
+        <div class="sms-feed" id="sms-feed">
+          <div class="empty-sms-prompt">
+            <p>AWS End User Messaging SMS v2 transactions will stream here.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Content: Incident Tickets -->
+      <div class="tab-content" id="tab-tickets">
+        <div class="tickets-container" id="tickets-container">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
