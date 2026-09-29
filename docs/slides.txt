@@ -1,0 +1,11 @@
+file 'E:/user/OneDrive - Bangladesh Telecommunication Regulatory Commission/ABM/freelance/Hackathon/Hack project 1/docs/slides/slide_1.png'
+duration 18.0
+file 'E:/user/OneDrive - Bangladesh Telecommunication Regulatory Commission/ABM/freelance/Hackathon/Hack project 1/docs/slides/slide_2.png'
+duration 18.0
+file 'E:/user/OneDrive - Bangladesh Telecommunication Regulatory Commission/ABM/freelance/Hackathon/Hack project 1/docs/slides/slide_3.png'
+duration 18.0
+file 'E:/user/OneDrive - Bangladesh Telecommunication Regulatory Commission/ABM/freelance/Hackathon/Hack project 1/docs/slides/slide_4.png'
+duration 18.0
+file 'E:/user/OneDrive - Bangladesh Telecommunication Regulatory Commission/ABM/freelance/Hackathon/Hack project 1/docs/slides/slide_5.png'
+duration 18.0
+file 'E:/user/OneDrive - Bangladesh Telecommunication Regulatory Commission/ABM/freelance/Hackathon/Hack project 1/docs/slides/slide_5.png'
